@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import Validator from "validator";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 
 const user = new mongoose.Schema({
@@ -36,5 +38,22 @@ const user = new mongoose.Schema({
         default: Date.now,
     },
 }); 
+
+user.pre("save", async function () {
+    if (!this.isModified("password")) {
+      next();
+    }
+    this.password = await bcrypt.hash(this.password, 10);
+});
+
+user.methods.comparePassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+};
+
+user.methods.getJWTToken = function () {
+    return jwt.sign({ id: this._id }, process.env.JWT_KEY, {
+      expiresIn: process.env.JWT_EXPIRES,
+    });
+};
 
 export const User = mongoose.model("User", user);
