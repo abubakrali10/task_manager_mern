@@ -30,7 +30,11 @@ const user = new mongoose.Schema({
             type: String,
             required: true,
         },
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 }); 
 
 export const User = mongoose.model("User", user);
