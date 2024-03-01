@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { dbConnection } from './database/dbConnection.js';
 import fileUpload from 'express-fileupload';
+import { errorMidware } from './middlewares/errorHandler.js';
 
 const app = express();
 dotenv.config({ path: "./config/config.env" });
@@ -22,6 +23,8 @@ app.use(fileUpload({
   useTempFile: true,
   tempFileDir: "/tmp/",
 }));
+
+app.use(errorMidware);
 
 dbConnection();
 
